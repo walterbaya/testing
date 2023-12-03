@@ -37,11 +37,27 @@ public class DemoTest {
 		assertTrue(Demo.isTriangle(5, 6, 7));
 	}
 
-	
 	@Test
 	public void isNotTriangleNull() {
 		assertFalse(Demo.isTriangle(0, 0, 0));
 	}
+	
+	@Test
+	public void isNotTriangleABEqualsC() {
+		assertFalse(Demo.isTriangle(1, 1, 2));
+	}
+	
+	@Test
+	public void isNotTriangleACEqualsB() {
+		assertFalse(Demo.isTriangle(1, 2, 1));
+	}
+	
+	@Test
+	public void isNotTriangleBCEqualsA() {
+		assertFalse(Demo.isTriangle(2, 1, 1));
+	}
+	
+	
 	
 	@Test
 	public void isNotTriangleNegative0() {
@@ -59,8 +75,18 @@ public class DemoTest {
 	}
 	
 	@Test
-	public void isNotTriangleToSmallSide() {
+	public void isNotTriangleToSmallSide0() {
+		assertFalse(Demo.isTriangle(5, 70, 40));
+	}
+	
+	@Test
+	public void isNotTriangleToSmallSide1() {
 		assertFalse(Demo.isTriangle(70, 5, 40));
+	}
+	
+	@Test
+	public void isNotTriangleToSmallSide2() {
+		assertFalse(Demo.isTriangle(5, 70, 40));
 	}
 	
 	@Test
@@ -83,7 +109,7 @@ public class DemoTest {
 	
 	@Test
 	public void isNotTriangleMain() {
-		ByteArrayInputStream in = new ByteArrayInputStream("70\n6\n-5\n".getBytes());
+		ByteArrayInputStream in = new ByteArrayInputStream("70\n6\n5\n".getBytes());
 		System.setIn(in);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(out));

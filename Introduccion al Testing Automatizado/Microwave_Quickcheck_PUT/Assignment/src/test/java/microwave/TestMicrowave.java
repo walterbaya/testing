@@ -134,14 +134,16 @@ public class TestMicrowave {
     	boolean timeIsCorrectlyDisplayed;
     	boolean modeIsCorrect;
     	
-    	if (secondsElapsed < timeToCook) {
-    		timeIsCorrectlyDisplayed = (String.format("%04d",  20-timeToCook)).contentEquals(this.printDigits(digits));
+		int totalTime = digit1 * 600 + digit2 * 60 + digit3 * 10 + digit4;
+		int timeRemaining = calcTime(digits);
+
+    	if (timeToCook < totalTime) {
     		modeIsCorrect = mode == ModeController.Mode.Cooking;
     	} else {
-    		timeIsCorrectlyDisplayed = "0000".contentEquals(this.digitsString(digits));
     		modeIsCorrect = mode == ModeController.Mode.Setup;
     	}
-    	assertTrue(timeIsCorrectlyDisplayed);
+
+		assertEquals(timeRemaining, Integer.max(totalTime-time, 0));
     	assertTrue(modeIsCorrect);
 		
 	}
@@ -160,9 +162,24 @@ public class TestMicrowave {
 	 * the presets array.  The microwave.presetPressed(preset) function indexes from 1 not 0.
 	 * 
 	 */
+
+	 //Cuantos presets puede haber???
+
 	@Property(trials = 100)
-	public void checkPreset(int preset) {
-		// Your code here!
+	public void checkPreset(@InRange(min="0", max="") int preset) {
+		
+				
+	try {
+			microwave.presetPressed(preset);
+			microwave.tick();
+			int arrayIndex = preset - 1;
+			byte [] digits =microwave.digits();
+			Preset p = microwave.getPresets().get(arrayIndex);
+			assertTrue(calcTime(digits) == p.getTimeToCook());
+			assertTrue(microwave.getPowerLevel() == p.getPowerLevel());
+		} catch (IllegalArgumentException e) {
+			assertTrue(preset < 1 || preset > microwave.presets.size());
+		}
 		
 	}
 	
@@ -180,6 +197,27 @@ public class TestMicrowave {
 	@Property(trials=100)
 	public void checkUnusualCookingTimes(int digit1, int digit2, int digit3, int digit4,
 			int timeToCook) {
-		// Your code HERE!
+		    	microwave.setDoorOpen(false);
+    	microwave.tick();
+    	microwave.digitPressed(digit1);
+    	microwave.tick();
+    	microwave.digitPressed(digit2);
+    	microwave.tick();
+    	microwave.digitPressed(digit3);
+    	microwave.tick();
+    	microwave.digitPressed(digit4);
+    	microwave.tick();
+    	microwave.startPressed();
+    	microwave.tick();
+    	System.out.println("Time: [" + digit1 + digit2 + ":" + digit3 + digit4 + "], ttc: " + time);
+    	
+    	this.secondsElapseCheckNormal(time);
+    	int totalTime = digit1 * 600 + digit2 * 60 + digit3 * 10 + digit4; 
+    	byte [] digits = microwave.digits();
+    	int timeRemaining = this.calcTime(digits);
+    	ModeController.Mode mode = microwave.getMode(); 
+		assertEquals(timeRemaining, Integer.max(totalTime-time, 0));
+		assertTrue((time < totalTime) ?  mode == ModeController.Mode.Cooking : 
+			mode == ModeController.Mode.Setup);
 	}
 }

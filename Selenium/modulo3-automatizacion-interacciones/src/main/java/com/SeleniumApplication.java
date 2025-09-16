@@ -5,7 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,28 +14,24 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SeleniumApplication {
 
 	public static void main(String[] args) {
-		System.setProperty("webdriver.chrome.driver", "/home/walter/Escritorio/chromedriver-linux64/chromedriver");
+		System.setProperty("webdriver.firefoxz.driver", "D:\\Users\\Walter\\Desktop\\geckodriver.exe");
 		//crear una instancia
-		WebDriver driver = new ChromeDriver();
+		WebDriver driver = new FirefoxDriver();
 			
-		//Creamos un esperador
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		
 		//Navegar a Wikipedia
 		driver.get("https://es.wikipedia.org/wiki/Wikipedia:Portada");
 		
-        // click en lupa
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#p-search > a"))).click();
-
         // volver a localizar el input justo antes de usarlo (evita stale)
-        wait.until(ExpectedConditions.refreshed(
-                ExpectedConditions.elementToBeClickable(By.name("search"))
-        )).sendKeys("Selenium");
+        WebElement searchBox = driver.findElement(By.id("searchInput"));
+		
+        searchBox.sendKeys("Selenium");
 
-        // click en el botón de búsqueda
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("searchButton"))).click();
-		
-		
+		//Vamos a esperar luego de escribir el texto
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        WebElement searchButton =  wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div[1]/header/div[2]/div/div/div/div/form/div/button")));
+        searchButton.click();
+       				
 		//cerrar el navegador
 		//driver.quit();
 	}
